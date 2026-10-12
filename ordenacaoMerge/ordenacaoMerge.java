@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
 
-class LeitorCsv {
-  public static Veiculo[] ler(String caminhoArquivo) {
-    Veiculo[] veiculos = new Veiculo[10000];
+class LeitorCsv { public static Veiculo[] ler(String caminhoArquivo) { Veiculo[] veiculos = new Veiculo[10000];
     int n = 0;
     try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
       String linha = br.readLine();

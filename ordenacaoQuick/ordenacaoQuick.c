@@ -82,16 +82,17 @@ void formatVeiculo(Veiculo v, char *buffer) {
   char combStr[200] = {0};
   for (int i = 0; i < 10 && strlen(v.combustivel[i]) > 0; i++) {
     if (i > 0)
-      strcat(combStr, ", ");
+      strcat(combStr, ",");
     strcat(combStr, v.combustivel[i]);
   }
 
-  sprintf(buffer,
-          "[%d ## %s ## %s ## %d ## %s ## [%s] ## %d ## %g ## %s ## %s ## %g "
-          "## %g ## %g ## %s ## %s]",
-          v.id, v.marca, v.modelo, v.ano, v.categoria, combStr, v.cilindros,
-          v.cilindrada, v.transmissao, v.tracao, v.consumoCidade,
-          v.consumoEstrada, v.co2, v.turbo ? "true" : "false", dataStr);
+  sprintf(
+      buffer,
+      "[%d ## %s ## %s ## %d ## %s ## [%s] ## %d ## %.1f ## %s ## %s ## %.2f "
+      "## %.2f ## %.1f ## %s ## %s]",
+      v.id, v.marca, v.modelo, v.ano, v.categoria, combStr, v.cilindros,
+      v.cilindrada, v.transmissao, v.tracao, v.consumoCidade, v.consumoEstrada,
+      v.co2, v.turbo ? "true" : "false", dataStr);
 }
 
 Veiculo *lerCsv(char *caminhoArquivo, int *n) {
@@ -143,35 +144,40 @@ Veiculo *lerCsv(char *caminhoArquivo, int *n) {
   return arr;
 }
 
-int partition(Veiculo *veiculos, int inicio, int fim) {
-  int i = inicio;
-  int j = fim;
-  double pivo = veiculos[(inicio + fim) / 2].consumoEstrada;
-
-  while (1) {
-    while (veiculos[i].consumoEstrada < pivo) {
-      i++;
-    }
-    while (veiculos[j].consumoEstrada > pivo) {
-      j--;
-    }
-    if (i >= j) {
-      return j;
-    }
-    Veiculo tmp = veiculos[i];
-    veiculos[i] = veiculos[j];
-    veiculos[j] = tmp;
-    i++;
-    j--;
+int comparar(Veiculo a, Veiculo b) {
+  if (a.consumoEstrada != b.consumoEstrada) {
+    return (a.consumoEstrada > b.consumoEstrada) ? 1 : -1;
   }
+  return strcmp(a.marca, b.marca);
 }
 
 void quicksort(Veiculo *veiculos, int inicio, int fim) {
-  if (inicio >= fim)
-    return;
-  int pivo = partition(veiculos, inicio, fim);
-  quicksort(veiculos, inicio, pivo);
-  quicksort(veiculos, pivo + 1, fim);
+  int i = inicio;
+  int j = fim;
+  Veiculo pivo = veiculos[(inicio + fim) / 2];
+
+  while (i <= j) {
+    while (comparar(veiculos[i], pivo) < 0) {
+      i++;
+    }
+    while (comparar(veiculos[j], pivo) > 0) {
+      j--;
+    }
+    if (i <= j) {
+      Veiculo tmp = veiculos[i];
+      veiculos[i] = veiculos[j];
+      veiculos[j] = tmp;
+      i++;
+      j--;
+    }
+  }
+
+  if (inicio < j) {
+    quicksort(veiculos, inicio, j);
+  }
+  if (i < fim) {
+    quicksort(veiculos, i, fim);
+  }
 }
 
 int main() {
